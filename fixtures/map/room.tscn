@@ -1,0 +1,11 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://complex.gd" id="1_root"]
+[ext_resource type="PackedScene" path="res://guest.tscn" id="2_guest"]
+
+[node name="Room" type="Node"]
+script = ExtResource("1_root")
+
+[node name="Seats" type="Node" parent="."]
+
+[node name="Guest" parent="Seats" instance=ExtResource("2_guest")]

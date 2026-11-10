@@ -1,0 +1,13 @@
+config_version=5
+
+[application]
+run/main_scene="res://room.tscn"
+
+[autoload]
+Manager="*res://complex.gd"
+
+[input]
+confirm={
+"deadzone": 0.5,
+"events": []
+}
