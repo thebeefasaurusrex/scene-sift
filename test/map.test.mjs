@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { appendFileSync, cpSync, mkdirSync, mkdtempSync, readFileSync } from 'node:fs';
+import { appendFileSync, copyFileSync, mkdirSync, mkdtempSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -34,10 +34,13 @@ test('Godot scene and project maps resolve attached scripts, parent paths and se
     { name: 'Seats', path: 'Seats', parent: '.', type: 'Node', line: 9 },
     { name: 'Guest', path: 'Seats/Guest', parent: 'Seats', type: null, line: 11, instance: 'res://guest.tscn' },
   ]);
-  assert.deepEqual(parseProject(read('project.godot')), {
+  const project = read('project.godot');
+  const settings = {
     mainScene: 'res://room.tscn', autoloads: [{ name: 'Manager', path: '*res://complex.gd', line: 7 }],
     inputs: [{ name: 'confirm', line: 10 }],
-  });
+  };
+  assert.deepEqual(parseProject(project.replace(/\r\n/g, '\n')), settings);
+  assert.deepEqual(parseProject(project.replace(/\r?\n/g, '\r\n')), settings);
 });
 
 test('Acorn maps exports, imports, class methods and arrow function ranges', () => {
@@ -55,7 +58,9 @@ test('SceneSift reuses unchanged files, refreshes before find/show and produces 
   const parent = fileURLToPath(new URL('../.gt/tests/', import.meta.url));
   mkdirSync(parent, { recursive: true });
   const root = mkdtempSync(join(parent, 'map-'));
-  cpSync(fileURLToPath(fixture), root, { recursive: true });
+  for (const file of ['complex.gd', 'complex.mjs', 'project.godot', 'room.tscn']) {
+    copyFileSync(new URL(file, fixture), join(root, file));
+  }
   const map = (...args) => {
     const cli = fileURLToPath(new URL('../bin/scene-sift.mjs', import.meta.url));
     const run = spawnSync(process.execPath, [cli, ...args, '--cwd', root], { encoding: 'utf8' });

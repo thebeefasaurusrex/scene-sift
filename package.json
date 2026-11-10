@@ -1,6 +1,6 @@
 {
   "name": "scene-sift",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Index Godot scenes and source and find symbols.",
   "type": "module",
   "private": true,
